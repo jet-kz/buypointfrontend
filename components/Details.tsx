@@ -87,9 +87,7 @@ const Detail = ({ product }: { product: Product }) => {
         <div className="space-y-6">
           <h1 className="text-2xl font-bold">{product.name}</h1>
           <div className="bg-muted/30 p-4 rounded-lg space-y-2">
-            <div className="text-3xl font-bold">
-              ₦{(product.price * 1650).toFixed(2)}
-            </div>
+            <div className="text-3xl font-bold">${product.price}</div>
             {product.stock !== undefined && (
               <div className="text-muted-foreground">
                 Stock: {product.stock}

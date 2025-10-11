@@ -121,7 +121,7 @@ const Cart = () => {
                 />
                 <div>
                   <h3 className="font-semibold">{item.product.name}</h3>
-                  <p className="text-gray-500">₦{item.product.price}</p>
+                  <p className="text-gray-500">${item.product.price}</p>
                 </div>
               </div>
 
@@ -164,7 +164,7 @@ const Cart = () => {
         <div className="p-4 border rounded-lg shadow-sm bg-white space-y-4">
           <h2 className="text-xl font-semibold">Order Summary</h2>
           <p className="text-gray-600">
-            Subtotal: ₦{subtotal.toLocaleString()}
+            Subtotal: ${subtotal.toLocaleString()}
           </p>
           <Button
             onClick={handleCheckout}

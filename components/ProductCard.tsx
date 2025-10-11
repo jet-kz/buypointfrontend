@@ -28,7 +28,7 @@ const ProductCard = ({
 
       <div className="flex flex-col gap-1 pt-4">
         <h3 className="font-bold text-lg text-red-600">
-          ₦{(product.price * 1560).toFixed(2)}
+          ${product.price * 1560}
         </h3>
         <h4 className="text-lg text-gray-800">{product.name}</h4>
       </div>

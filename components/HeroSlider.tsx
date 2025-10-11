@@ -18,7 +18,6 @@ const promoCategories: Category[] = [
 
 const slides = [
   {
-    type: "image",
     src: "/hot-sales.webp",
     heading: "Hot Sales",
     sub: "Grab the best deals now!",
@@ -26,7 +25,6 @@ const slides = [
     link: "/product/search?q=iphone",
   },
   {
-    type: "image",
     src: "/new-arrivals.jpg",
     heading: "New Arrivals",
     sub: "Fresh picks just for you",
@@ -34,19 +32,16 @@ const slides = [
     link: "/product/search?q=iphone",
   },
   {
-    type: "image",
     src: "/laptop.png",
     heading: "New Release",
     sub: "Experience innovation like never before",
     cta: "Discover",
-    link: "/products/new-release",
+    link: "/product/search?q=laptop",
   },
 ];
 
 export default function HeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  // refs for nav buttons
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
 
@@ -94,7 +89,7 @@ export default function HeroSlider() {
                     {slide.cta}
                   </a>
 
-                  {/* diagonal flair overlay */}
+                  {/* Diagonal overlay flair */}
                   <div
                     className="absolute bottom-0 left-0 w-full h-40 bg-primary/80 
                                [clip-path:polygon(0_60%,100%_100%,0%_100%)]
@@ -104,25 +99,15 @@ export default function HeroSlider() {
                   />
                 </div>
 
-                {/* Right image/video section */}
+                {/* Right image section */}
                 <div className="relative w-full h-full">
-                  {slide.type === "image" ? (
-                    <Image
-                      src={slide.src}
-                      alt={slide.heading}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  ) : (
-                    <video
-                      src={slide.src}
-                      autoPlay
-                      muted
-                      loop
-                      className="absolute top-0 left-0 w-full h-full object-cover"
-                    />
-                  )}
+                  <Image
+                    src={slide.src}
+                    alt={slide.heading}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
                 </div>
               </div>
             </SwiperSlide>
@@ -150,7 +135,7 @@ export default function HeroSlider() {
         </button>
       </div>
 
-      {/* tracker beneath whole slider */}
+      {/* Progress tracker below slider */}
       <div className="flex justify-center mt-6 gap-2">
         {slides.map((_, i) => (
           <div

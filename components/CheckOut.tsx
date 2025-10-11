@@ -333,7 +333,7 @@ const ConfirmStep = ({ cart, onBack, checkout, addresses, toast }: any) => {
                   </div>
                 </div>
                 <span className="font-medium">
-                  ₦{item.product.price * item.quantity}
+                  ${item.product.price * item.quantity}
                 </span>
               </div>
             ))}
@@ -342,10 +342,13 @@ const ConfirmStep = ({ cart, onBack, checkout, addresses, toast }: any) => {
               <span>Total:</span>
               <span>
                 ₦
-                {cart?.items?.reduce(
-                  (sum: number, i: any) => sum + i.product.price * i.quantity,
-                  0
-                )}
+                {(
+                  cart?.items?.reduce(
+                    (sum: number, i: any) => sum + i.product.price * i.quantity,
+                    0
+                  ) * 1500
+                ) // ✅ convert to naira
+                  .toFixed(2)}
               </span>
             </div>
 
