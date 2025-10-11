@@ -112,68 +112,87 @@ const BottomNav: React.FC<BottomNavProps> = ({
             );
           })}
 
-          {isAuthenticated && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="flex flex-col items-center text-xs"
-                  onClick={() => setActive("profile")}
-                >
-                  <div
-                    className={`flex items-center justify-center w-10 h-10 rounded-full mb-1 transition-colors ${
-                      active === "profile" ? "bg-primary" : "bg-gray-100"
-                    }`}
-                  >
-                    <MdPerson
-                      size={22}
-                      className={
-                        active === "profile" ? "text-white" : "text-gray-500"
-                      }
-                    />
-                  </div>
-                  <span
-                    className={
-                      active === "profile"
-                        ? "text-primary font-semibold"
-                        : "text-gray-500"
-                    }
-                  >
-                    My Buypoint
-                  </span>
-                </button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent
-                align="end"
-                sideOffset={6}
-                className="w-56 rounded-xl"
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="flex flex-col items-center text-xs"
+                onClick={() => setActive("profile")}
               >
-                <DropdownMenuLabel>
-                  <div>
-                    <p className="font-semibold text-sm">
-                      Hi, {username ?? "Guest"}
-                    </p>
-                    <p className="text-xs text-gray-500">{email}</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/user/profile")}>
-                  <Settings className="mr-2 h-4 w-4" /> Buypoint Profile
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/user/order")}>
-                  <ListOrdered className="mr-2 h-4 w-4" /> My Orders
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="text-red-600 font-semibold"
+                <div
+                  className={`flex items-center justify-center w-10 h-10 rounded-full mb-1 transition-colors ${
+                    active === "profile" ? "bg-primary" : "bg-gray-100"
+                  }`}
                 >
-                  <LogOut className="mr-2 h-4 w-4" /> Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+                  <MdPerson
+                    size={22}
+                    className={
+                      active === "profile" ? "text-white" : "text-gray-500"
+                    }
+                  />
+                </div>
+                <span
+                  className={
+                    active === "profile"
+                      ? "text-primary font-semibold"
+                      : "text-gray-500"
+                  }
+                >
+                  {isAuthenticated ? "My Buypoint" : "Account"}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="end"
+              sideOffset={6}
+              className="w-56 rounded-xl"
+            >
+              {isAuthenticated ? (
+                <>
+                  <DropdownMenuLabel>
+                    <div>
+                      <p className="font-semibold text-sm">
+                        Hi, {username ?? "Guest"}
+                      </p>
+                      <p className="text-xs text-gray-500">{email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => router.push("/user/profile")}
+                  >
+                    <Settings className="mr-2 h-4 w-4" /> Buypoint Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push("/user/order")}>
+                    <ListOrdered className="mr-2 h-4 w-4" /> My Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className="text-red-600 font-semibold"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuLabel>
+                    <p className="text-sm font-semibold text-gray-700">
+                      Welcome to Buypoint
+                    </p>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push("/login")}>
+                    Login
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push("/register")}>
+                    Register
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </>
       )}
     </div>
