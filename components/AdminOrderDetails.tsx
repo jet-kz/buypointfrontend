@@ -60,7 +60,7 @@ export default function AdminOrderDetail() {
         </h1>
         <div className="flex items-center gap-3">
           <Select onValueChange={setSelectedStatus}>
-            <SelectTrigger className="w-60">
+            <SelectTrigger className="w-42">
               <SelectValue
                 placeholder={`Update Status (current: ${order.status})`}
               />

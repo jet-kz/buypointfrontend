@@ -34,7 +34,7 @@ const MobileCategories: React.FC<MobileCategoriesProps> = ({ categories }) => {
             <div
               key={cat.id}
               className="flex flex-col items-center cursor-pointer min-w-[70px]"
-              onClick={() => router.push(`/category/${cat.slug}`)}
+              onClick={() => router.push(`/categories`)}
             >
               <div
                 className={`w-20 h-20 rounded-full flex items-center justify-center font-bold ${color} text-xl`}

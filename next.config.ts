@@ -18,7 +18,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "yourdomain.com", // add your prod host here
+        hostname: "buypoint.onrender.com", // ✅ your deployed FastAPI backend
+      },
+      {
+        protocol: "https",
+        hostname: "buypointapp.vercel.app", // optional, if you store any on frontend domain
       },
     ],
   },

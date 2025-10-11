@@ -34,8 +34,8 @@ const slides = [
     link: "/product/search?q=iphone",
   },
   {
-    type: "video",
-    src: "/new-release.mp4",
+    type: "image",
+    src: "/laptop.png",
     heading: "New Release",
     sub: "Experience innovation like never before",
     cta: "Discover",
