@@ -9,7 +9,7 @@ interface OrderStore {
   avgOrderValue: number;
   statusCounts: {
     pending: number;
-    completed: number;
+    paid: number;
     cancelled: number;
   };
   setOrders: (orders: Order[]) => void;
@@ -20,7 +20,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
   totalSales: 0,
   totalOrders: 0,
   avgOrderValue: 0,
-  statusCounts: { pending: 0, completed: 0, cancelled: 0 },
+  statusCounts: { pending: 0, paid: 0, cancelled: 0 },
 
   setOrders: (orders) => {
     const safeOrders = Array.isArray(orders) ? orders : [];
@@ -30,7 +30,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
 
     const statusCounts = {
       pending: safeOrders.filter((o) => o.status === "pending").length,
-      completed: safeOrders.filter((o) => o.status === "completed").length,
+      paid: safeOrders.filter((o) => o.status === "paid").length,
       cancelled: safeOrders.filter((o) => o.status === "cancelled").length,
     };
 
