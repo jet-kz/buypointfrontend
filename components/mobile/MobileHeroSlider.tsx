@@ -2,14 +2,13 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import "swiper/css";
 import "swiper/css/effect-fade";
 import useMobile from "@/hooks/use-mobile";
 
 const slides = [
   {
-    type: "image",
     src: "/hot-sales.webp",
     heading: "Hot Sales",
     sub: "Grab the best deals now!",
@@ -17,7 +16,6 @@ const slides = [
     link: "/product/search?q=iphone",
   },
   {
-    type: "image",
     src: "/new-arrivals.jpg",
     heading: "New Arrivals",
     sub: "Fresh picks just for you",
@@ -25,12 +23,11 @@ const slides = [
     link: "/product/search?q=iphone",
   },
   {
-    type: "video",
-    src: "/new-release.mp4",
+    src: "/laptop.png",
     heading: "New Release",
     sub: "Experience innovation like never before",
     cta: "Discover",
-    link: "/products/new-release",
+    link: "/product/search?q=laptop",
   },
 ];
 
@@ -53,23 +50,13 @@ export default function MobileHeroSlider() {
         {slides.map((slide, i) => (
           <SwiperSlide key={i}>
             <div className="relative w-full h-full">
-              {slide.type === "image" ? (
-                <Image
-                  src={slide.src}
-                  alt={slide.heading}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              ) : (
-                <video
-                  src={slide.src}
-                  autoPlay
-                  muted
-                  loop
-                  className="absolute top-0 left-0 w-full h-full object-cover"
-                />
-              )}
+              <Image
+                src={slide.src}
+                alt={slide.heading}
+                fill
+                className="object-cover"
+                priority
+              />
 
               {/* Overlay text */}
               <div
