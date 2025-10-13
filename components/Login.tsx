@@ -55,10 +55,12 @@ export default function Login() {
       setAuth(data.username, data.email, data.role, data.token);
       toast.success("Login successful!");
 
-      // ✅ Role-based redirect
-      if (data.role === "superadmin") router.push("/superadmin/dashboard");
-      else if (data.role === "admin") router.push("/superadmin/dashboard");
-      else router.push("/");
+      // ✅ Unified Role-based Redirect
+      if (data.role === "superadmin" || data.role === "admin") {
+        router.push("/superadmin/dashboard");
+      } else {
+        router.push("/");
+      }
     } catch (err: any) {
       console.error("Login error:", err);
       toast.error(err.message || "Login failed. Please try again.");

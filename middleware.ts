@@ -9,9 +9,9 @@ export function middleware(req: NextRequest) {
   const isRegisterPage = pathname === "/register";
   const isHomePage = pathname === "/";
 
-  const isSuperAdminRoute = pathname.startsWith("/superadmin");
-  const isAdminRoute = pathname.startsWith("/admin");
-  const isUserRoute =
+  const isAdminSection =
+    pathname.startsWith("/admin") || pathname.startsWith("/superadmin");
+  const isUserSection =
     pathname.startsWith("/user/cart") ||
     pathname.startsWith("/user/checkout") ||
     pathname.startsWith("/user/order") ||
@@ -19,47 +19,34 @@ export function middleware(req: NextRequest) {
 
   // 1️⃣ Not logged in → block protected routes
   if (!token) {
-    if (isSuperAdminRoute || isAdminRoute || isUserRoute) {
+    if (isAdminSection || isUserSection) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
     return NextResponse.next(); // allow public pages
   }
 
-  // 2️⃣ Role-based access control
-  if (role === "superadmin") {
-    // Redirect home ("/") → superadmin dashboard
-    if (isHomePage) {
+  // 2️⃣ Admin or Superadmin → treat both as same
+  if (role === "admin" || role === "superadmin") {
+    // Redirect home ("/") → unified dashboard
+    if (isHomePage || isLoginPage || isRegisterPage) {
       return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
     }
-    // Block other role pages
-    if (isAdminRoute || isUserRoute) {
+    // Block user-only routes
+    if (isUserSection) {
       return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
-    }
-  } else if (role === "admin") {
-    // Redirect home ("/") → admin dashboard
-    if (isHomePage) {
-      return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
-    }
-    if (isSuperAdminRoute || isUserRoute) {
-      return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
-    }
-  } else {
-    // Normal user — home is `/`
-    if (isSuperAdminRoute || isAdminRoute) {
-      return NextResponse.redirect(new URL("/", req.url));
     }
   }
 
-  // 3️⃣ Block login/register if already logged in
-  if (isLoginPage || isRegisterPage) {
-    if (role === "superadmin") {
-      return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
+  // 3️⃣ Normal User
+  if (role === "user") {
+    // Prevent access to admin/superadmin areas
+    if (isAdminSection) {
+      return NextResponse.redirect(new URL("/", req.url));
     }
-    if (role === "admin") {
-      return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
+    // Prevent login/register again
+    if (isLoginPage || isRegisterPage) {
+      return NextResponse.redirect(new URL("/", req.url));
     }
-    // Normal user → just home
-    return NextResponse.redirect(new URL("/", req.url));
   }
 
   // ✅ Allow everything else
