@@ -57,7 +57,7 @@ export default function Login() {
 
       // ✅ Role-based redirect
       if (data.role === "superadmin") router.push("/superadmin/dashboard");
-      else if (data.role === "admin") router.push("/admin/dashboard");
+      else if (data.role === "admin") router.push("/superadmin/dashboard");
       else router.push("/");
     } catch (err: any) {
       console.error("Login error:", err);
