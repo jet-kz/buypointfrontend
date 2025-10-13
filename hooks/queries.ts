@@ -126,7 +126,7 @@ export const useRestoreProduct = () => {
 
   return useMutation<ProductResponse, Error, number>({
     mutationFn: async (productId) => {
-      const res = await api.put(`/products/${productId}`);
+      const res = await api.put(`/products/restore/${productId}`);
       return res.data;
     },
     onSuccess: (data) => {
@@ -157,6 +157,30 @@ export const useDeleteProduct = () => {
     },
     onError: () => {
       toast.error("Failed to delete product.");
+    },
+  });
+};
+
+// ✅ Update Product
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    ProductResponse,
+    Error,
+    { id: number; data: Partial<CreateProduct> }
+  >({
+    mutationFn: async ({ id, data }) => {
+      const res = await api.put(`/products/${id}`, data);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Product updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product", data.data.id] });
+    },
+    onError: () => {
+      toast.error("Failed to update product.");
     },
   });
 };
@@ -994,6 +1018,40 @@ export const useDeleteUser = () => {
     onSuccess: () => {
       toast.success("User deleted!");
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+};
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  is_active: boolean;
+  is_verified: boolean;
+  role: "user" | "admin" | "superadmin";
+  created_at: string;
+}
+
+export interface CreateAdminPayload {
+  username: string;
+  email: string;
+  password: string;
+}
+// ✅ Create admin (superadmin only)
+export const useCreateAdmin = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateAdminPayload) => {
+      const res = await api.post("/auth/create_admin", payload);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      toast.success("Admin created successfully");
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      return data;
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.detail || "Failed to create admin");
     },
   });
 };

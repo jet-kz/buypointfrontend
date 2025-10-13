@@ -1,11 +1,17 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useAllUsers, useDeactivateUser, useDeleteUser } from "@/hooks/queries";
+import {
+  useAllUsers,
+  useDeactivateUser,
+  useDeleteUser,
+  useCreateAdmin,
+} from "@/hooks/queries";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 export default function AllUsers() {
   const { data: users, isLoading } = useAllUsers();
@@ -15,6 +21,13 @@ export default function AllUsers() {
 
   const { mutateAsync: deactivateUser } = useDeactivateUser();
   const { mutateAsync: deleteUser } = useDeleteUser();
+  const createAdmin = useCreateAdmin();
+
+  const [adminForm, setAdminForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
   const filteredUsers = useMemo(() => {
     if (!users) return [];
@@ -36,9 +49,6 @@ export default function AllUsers() {
     try {
       setLoadingId(id);
       await deactivateUser(id);
-      toast.success("User deactivated");
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to deactivate user");
     } finally {
       setLoadingId(null);
     }
@@ -48,16 +58,26 @@ export default function AllUsers() {
     try {
       setLoadingId(id);
       await deleteUser(id);
-      toast.success("User deleted permanently");
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to delete user");
     } finally {
       setLoadingId(null);
     }
   };
 
+  const handleCreateAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adminForm.username || !adminForm.email || !adminForm.password) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    try {
+      await createAdmin.mutateAsync(adminForm);
+      setAdminForm({ username: "", email: "", password: "" });
+    } catch {}
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Search */}
       <div className="flex justify-end">
         <input
@@ -79,6 +99,9 @@ export default function AllUsers() {
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Email
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Role
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
@@ -103,13 +126,16 @@ export default function AllUsers() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                   {user.email}
                 </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 capitalize">
+                  {user.role}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {user.is_active ? (
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 hover:bg-green-200 transition">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                       Active
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 hover:bg-red-200 transition">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                       Inactive
                     </span>
                   )}
@@ -151,12 +177,45 @@ export default function AllUsers() {
             ))}
           </tbody>
         </table>
+      </div>
 
-        {filteredUsers.length === 0 && (
-          <p className="text-center text-muted-foreground p-4">
-            No users match your search.
-          </p>
-        )}
+      {/* ➕ Create Admin Form */}
+      <div className="border rounded-xl p-6 shadow-sm max-w-lg mx-auto">
+        <h2 className="text-lg font-semibold mb-4 text-center">
+          Create New Admin
+        </h2>
+        <form onSubmit={handleCreateAdmin} className="space-y-3">
+          <Input
+            placeholder="Username"
+            value={adminForm.username}
+            onChange={(e) =>
+              setAdminForm({ ...adminForm, username: e.target.value })
+            }
+          />
+          <Input
+            placeholder="Email"
+            type="email"
+            value={adminForm.email}
+            onChange={(e) =>
+              setAdminForm({ ...adminForm, email: e.target.value })
+            }
+          />
+          <Input
+            placeholder="Password"
+            type="password"
+            value={adminForm.password}
+            onChange={(e) =>
+              setAdminForm({ ...adminForm, password: e.target.value })
+            }
+          />
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={createAdmin.isPending}
+          >
+            {createAdmin.isPending ? "Creating..." : "Create Admin"}
+          </Button>
+        </form>
       </div>
     </div>
   );
