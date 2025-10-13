@@ -93,7 +93,7 @@ function VerifyOtp() {
       <div className="text-center">
         <h2 className="text-xl font-semibold">Verify your email</h2>
         <p className="text-sm text-gray-500">
-          Enter the 6-digit code sent to{" "}
+          Enter the 6-digit code sent to your spam{" "}
           <span className="font-medium">{email}</span>
         </p>
       </div>
