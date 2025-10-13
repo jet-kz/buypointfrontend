@@ -38,10 +38,10 @@ export function middleware(req: NextRequest) {
   } else if (role === "admin") {
     // Redirect home ("/") → admin dashboard
     if (isHomePage) {
-      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+      return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
     }
     if (isSuperAdminRoute || isUserRoute) {
-      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+      return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
     }
   } else {
     // Normal user — home is `/`
@@ -56,7 +56,7 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
     }
     if (role === "admin") {
-      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+      return NextResponse.redirect(new URL("/superadmin/dashboard", req.url));
     }
     // Normal user → just home
     return NextResponse.redirect(new URL("/", req.url));
