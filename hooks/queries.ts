@@ -365,7 +365,7 @@ export const useCart = () => {
   return query;
 };
 
-// ✅ Add to cart
+// ✅ Add to cart (Optimistic)
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
 
@@ -380,12 +380,84 @@ export const useAddToCart = () => {
       return api.post("/cart/add", { product_id, quantity });
     },
 
-    onSuccess: () => {
+    onMutate: async (newItem) => {
+      // 1️⃣ Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["cart"] });
+
+      // 2️⃣ Snapshot previous query data
+      const previousCart = queryClient.getQueryData(["cart"]);
+
+      // 3️⃣ Optimistically update Query Cache (for components using useCart)
+      queryClient.setQueryData(["cart"], (old: any) => {
+        if (!old) return { items: [], total_price: 0 };
+        const newItems = [...old.items];
+        const existingItemIndex = newItems.findIndex((item: any) => item.product.id === newItem.product_id);
+
+        // Fetch product details from cache if possible
+        const productCache = queryClient.getQueryData<{ pages: any[] }>(["products"]);
+        let productDetails = { id: newItem.product_id, name: "Item", price: 0, image_url: "/placeholder.svg" };
+
+        // Try to find product in infinite query cache
+        if (productCache?.pages) {
+          for (const page of productCache.pages) {
+            const found = page.find((p: any) => p.id === newItem.product_id);
+            if (found) {
+              productDetails = found;
+              break;
+            }
+          }
+        }
+
+        if (existingItemIndex > -1) {
+          newItems[existingItemIndex] = {
+            ...newItems[existingItemIndex],
+            quantity: newItems[existingItemIndex].quantity + newItem.quantity
+          };
+        } else {
+          newItems.push({
+            id: Date.now(), // temporary ID
+            product: productDetails,
+            quantity: newItem.quantity,
+            cart_id: 0
+          });
+        }
+        return { ...old, items: newItems };
+      });
+
+      // 4️⃣ ⚡ INSTANTLY Update Global Zustand Store (for Cart.tsx)
+      // This ensures the Cart page updates immediately without waiting for effects
+      const productCache = queryClient.getQueryData<{ pages: any[] }>(["products"]);
+      let productDetails: any = { id: newItem.product_id, name: "Product", price: 0 };
+
+      if (productCache?.pages) {
+        for (const page of productCache.pages) {
+          const found = page.find((p: any) => p.id === newItem.product_id);
+          if (found) {
+            productDetails = found;
+            break;
+          }
+        }
+      }
+
+      // Direct store update
+      useCartStore.getState().addItem(productDetails, newItem.quantity);
+
+      return { previousCart };
+    },
+
+    onError: (err, newItem, context) => {
+      queryClient.setQueryData(["cart"], context?.previousCart);
+      // Ideally revert Zustand store here too, but re-fetching on settled fixes it
+      toast.error("Failed to add to cart");
+    },
+
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to add to cart");
-    },
+
+    onSuccess: () => {
+      toast.success("Added to cart!");
+    }
   });
 };
 
@@ -797,12 +869,12 @@ export const useAdminOrders = () => {
       // case: grouped object in payload.data (or payload)
       const grouped =
         payload?.data &&
-        typeof payload.data === "object" &&
-        !Array.isArray(payload.data)
+          typeof payload.data === "object" &&
+          !Array.isArray(payload.data)
           ? payload.data
           : payload && typeof payload === "object" && !Array.isArray(payload)
-          ? payload
-          : null;
+            ? payload
+            : null;
 
       if (grouped) {
         // Flatten all arrays in grouped object into one list
@@ -919,8 +991,8 @@ export const useAllProducts = (limit = 1000) => {
       return Array.isArray(res.data)
         ? res.data
         : Array.isArray(res.data?.data)
-        ? res.data.data
-        : res.data?.data || [];
+          ? res.data.data
+          : res.data?.data || [];
     },
   });
 };
