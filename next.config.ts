@@ -28,7 +28,7 @@ const nextConfig = {
   },
   env: {
     PAYSTACK_PUBLIC_KEY: process.env.PAYSTACK_PUBLIC_KEY,
-    NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || process.env.PAYSTACK_PUBLIC_KEY, // Fallback exposure
+    NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: process.env.PAYSTACK_PUBLIC_KEY, // Fallback exposure
     PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
   },
 };
