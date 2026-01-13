@@ -9,14 +9,17 @@ import {
 import ProductPageClient from "@/components/ProductPageClient";
 import { getProduct } from "@/hooks/queries";
 
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
 // --- Metadata for SEO ---
-export async function generateMetadata({
-  params,
-}: {
-  params: { id: string };
-}): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
+  const id = params.id;
   try {
-    const product = await getProduct(Number(params.id));
+    const product = await getProduct(Number(id));
     return {
       title: product?.name ?? "Product details",
       description: product?.description ?? "All products - BuyPoint",
@@ -30,21 +33,20 @@ export async function generateMetadata({
 }
 
 // --- Server component with prefetch + hydration ---
-export default async function ProductPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function ProductPage(props: Props) {
+  const params = await props.params;
+  const id = Number(params.id);
+
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["product", Number(params.id)],
-    queryFn: () => getProduct(Number(params.id)),
+    queryKey: ["product", id],
+    queryFn: () => getProduct(id),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductPageClient id={Number(params.id)} />
+      <ProductPageClient id={id} />
     </HydrationBoundary>
   );
 }
