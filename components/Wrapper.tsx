@@ -13,8 +13,7 @@ const Wrapper = ({
     <div className={`relative w-full ${noMargin ? "" : "mb-[20px]"} "`}>
       <div
         className={`
-          lg:w-[888px] w-[1188px] max-w-full mx-auto p-[20px] ${
-            bgColor ? bgColor : "bg-white"
+          lg:w-[888px] w-[1188px] max-w-full mx-auto p-[20px] ${bgColor ? bgColor : "bg-white dark:bg-zinc-950"
           }`}
       >
         {children}

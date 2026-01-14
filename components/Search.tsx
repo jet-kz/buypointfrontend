@@ -40,7 +40,7 @@ const Search = () => {
   return (
     <div className="relative w-full max-w-[450px] mx-auto" ref={dropdownRef}>
       {/* Search bar */}
-      <div className="flex items-center h-[40px] rounded-full bg-white border border-primary overflow-hidden">
+      <div className="flex items-center h-[40px] rounded-full bg-white dark:bg-zinc-900 border border-primary overflow-hidden">
         <SearchIcon className="text-primary mx-4" size={20} />
         <input
           type="text"
@@ -50,12 +50,12 @@ const Search = () => {
             setShowDropdown(true);
           }}
           placeholder="What are you looking for?"
-          className="flex-1 h-full bg-transparent outline-none text-sm"
+          className="flex-1 h-full bg-transparent outline-none text-sm text-foreground"
         />
         <button
           type="button"
           onClick={() => handleSearch()}
-          className="bg-primary text-white px-4 py-2 rounded-r-full h-full text-sm"
+          className="bg-primary text-white px-4 py-2 rounded-r-full h-full text-sm hover:bg-primary/90 transition-colors"
         >
           Search
         </button>
@@ -63,15 +63,15 @@ const Search = () => {
 
       {/* Suggestions dropdown */}
       {showDropdown && query.length > 1 && (
-        <div className="absolute mt-2 w-full bg-white shadow-lg rounded-lg border z-50">
+        <div className="absolute mt-2 w-full bg-white dark:bg-zinc-900 shadow-lg rounded-lg border dark:border-zinc-800 z-50">
           {isFetching && (
-            <div className="px-4 py-2 text-sm text-gray-400">Loading…</div>
+            <div className="px-4 py-2 text-sm text-gray-400 dark:text-gray-500">Loading…</div>
           )}
           {!isFetching &&
             suggestions.map((name, idx) => (
               <div
                 key={idx}
-                className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800 cursor-pointer text-foreground"
                 onClick={() => handleSearch(name)}
               >
                 {name}

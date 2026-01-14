@@ -2,11 +2,11 @@
 
 import { useMemo } from "react";
 import { useAdminOrders, useAllProducts } from "@/hooks/queries";
-
 import StatsOverview from "./StatsOverview";
 import OrderStatusPieChart from "./OrderStatusPieChart";
 import OrdersByRegionChart from "./OrdersByRegionChart";
 import RecentOrdersTable from "./RecentOrders";
+import { Calendar, TrendingUp } from "lucide-react";
 
 export default function AdminDashboard() {
   const { data: orders, isLoading: ordersLoading } = useAdminOrders();
@@ -14,7 +14,6 @@ export default function AdminDashboard() {
 
   const loading = ordersLoading || productsLoading;
 
-  // --- Stats Overview (Total Orders, Products, Revenue, Pending)
   const stats = useMemo(() => {
     if (loading || !orders || !products)
       return {
@@ -38,7 +37,6 @@ export default function AdminDashboard() {
     };
   }, [orders, products, loading]);
 
-  // --- Pie Chart: Orders by Status
   const orderStatusData = useMemo(() => {
     if (!orders) return [];
     const statusCounts = orders.reduce((acc: Record<string, number>, o) => {
@@ -52,7 +50,6 @@ export default function AdminDashboard() {
     }));
   }, [orders]);
 
-  // --- Orders by Region (if `address.city` or `address.state` exists)
   const ordersByRegion = useMemo(() => {
     if (!orders) return [];
     const regions: Record<string, number> = {};
@@ -65,7 +62,6 @@ export default function AdminDashboard() {
     return Object.entries(regions).map(([name, value]) => ({ name, value }));
   }, [orders]);
 
-  // --- Recent Orders (last 5 by created_at)
   const recentOrders = useMemo(() => {
     if (!orders?.length) return [];
     return [...orders]
@@ -76,8 +72,35 @@ export default function AdminDashboard() {
       .slice(0, 8);
   }, [orders]);
 
+  // Get current date
+  const today = new Date();
+  const dateString = today.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500 text-sm mt-1 flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
+            {dateString}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-100 rounded-xl">
+          <TrendingUp className="w-5 h-5 text-green-600" />
+          <span className="text-sm font-medium text-green-700">
+            Store is performing well today!
+          </span>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
       <StatsOverview
         totalOrders={stats.totalOrders}
         totalProducts={stats.totalProducts}
@@ -86,10 +109,25 @@ export default function AdminDashboard() {
         loading={loading}
       />
 
-      <RecentOrdersTable orders={recentOrders} loading={loading} />
+      {/* Recent Orders */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="p-4 md:p-6 border-b border-gray-100">
+          <h2 className="text-lg font-bold text-gray-900">Recent Orders</h2>
+          <p className="text-sm text-gray-500">Latest orders from your store</p>
+        </div>
+        <RecentOrdersTable orders={recentOrders} loading={loading} />
+      </div>
+
+      {/* Charts */}
       <div className="grid gap-6 md:grid-cols-2">
-        <OrderStatusPieChart data={orderStatusData} loading={loading} />
-        <OrdersByRegionChart data={ordersByRegion} loading={loading} />
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Order Status</h3>
+          <OrderStatusPieChart data={orderStatusData} loading={loading} />
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Orders by Region</h3>
+          <OrdersByRegionChart data={ordersByRegion} loading={loading} />
+        </div>
       </div>
     </div>
   );

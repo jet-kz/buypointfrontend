@@ -16,7 +16,7 @@ export default function LayoutWrapper({
   const isMobile = useMobile();
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* ✅ Hide header/footer on superadmin pages and mobile */}
       {!isSuperAdmin && !isMobile && <Header />}
 

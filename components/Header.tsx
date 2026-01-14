@@ -15,6 +15,7 @@ import Logo from "./Logo";
 import { Button } from "./ui/button";
 import Wrapper from "./Wrapper";
 import Search from "./Search";
+import { ModeToggle } from "./mode-toggle";
 
 import {
   DropdownMenu,
@@ -68,7 +69,7 @@ const Header = () => {
   }, [token, clearAuth, router]);
 
   return (
-    <div className="relative bg-white border-b border-gray-300 shadow-sm">
+    <div className="relative bg-white dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-800 shadow-sm">
       <Wrapper noMargin>
         <div className="relative flex items-center gap-4">
           {/* Logo */}
@@ -96,6 +97,9 @@ const Header = () => {
                 </span>
               )}
             </Button>
+
+            {/* Mode Toggle */}
+            <ModeToggle />
 
             {/* Authenticated vs Public */}
             {!isAuthenticated ? (
@@ -137,7 +141,7 @@ const Header = () => {
                   <DropdownMenuLabel>
                     <div>
                       <p className="font-semibold">Hi, {username ?? "Guest"}</p>
-                      <p className="text-sm text-black">{email}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{email}</p>
                     </div>
                   </DropdownMenuLabel>
 
