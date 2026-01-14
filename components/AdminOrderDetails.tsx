@@ -28,7 +28,8 @@ import {
   ChevronRight,
   Phone,
   Mail,
-  Calendar
+  Calendar,
+  Loader2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
