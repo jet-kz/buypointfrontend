@@ -37,6 +37,7 @@ import { Input } from "./ui/input";
 import { initiatePaystackInline } from "@/lib/paystack";
 import { useAuthStore } from "@/store/useAuthstore";
 import { useRouter } from "next/navigation";
+import { usePaystackPayment } from "@/hooks/usePaystack";
 
 // ===== Step Tracker =====
 const StepTracker = ({ step, onStepClick }: { step: number; onStepClick: (s: number) => void }) => {
@@ -63,10 +64,10 @@ const StepTracker = ({ step, onStepClick }: { step: number; onStepClick: (s: num
             >
               <div
                 className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 ${isActive
-                    ? "bg-orange-500 text-white shadow-lg shadow-orange-200 scale-110"
-                    : isCompleted
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-100 text-gray-400"
+                  ? "bg-orange-500 text-white shadow-lg shadow-orange-200 scale-110"
+                  : isCompleted
+                    ? "bg-green-500 text-white"
+                    : "bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-zinc-500"
                   }`}
               >
                 {isCompleted ? <CheckCircle2 size={24} /> : <Icon size={22} />}
@@ -79,7 +80,7 @@ const StepTracker = ({ step, onStepClick }: { step: number; onStepClick: (s: num
               </span>
             </button>
             {idx < steps.length - 1 && (
-              <div className="flex-1 h-1 mx-2 md:mx-4 rounded-full bg-gray-100 overflow-hidden">
+              <div className="flex-1 h-1 mx-2 md:mx-4 rounded-full bg-gray-100 dark:bg-zinc-800 overflow-hidden">
                 <motion.div
                   initial={{ width: "0%" }}
                   animate={{ width: step > idx ? "100%" : "0%" }}
@@ -109,8 +110,8 @@ const AddressCard = ({
     animate={{ opacity: 1, y: 0 }}
     onClick={onSelect}
     className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all ${isSelected
-        ? "border-orange-500 bg-orange-50/50"
-        : "border-gray-100 bg-white hover:border-gray-200"
+      ? "border-orange-500 bg-orange-50/50 dark:bg-orange-500/10"
+      : "border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-gray-200 dark:hover:border-zinc-700"
       }`}
   >
     {address.is_default && (
@@ -126,8 +127,8 @@ const AddressCard = ({
         {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-gray-900 text-sm">{address.full_name}</p>
-        <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+        <p className="font-semibold text-gray-900 dark:text-white text-sm">{address.full_name}</p>
+        <p className="text-gray-600 dark:text-zinc-400 text-sm mt-1 line-clamp-2">
           {address.street_address}, {address.city}
         </p>
         <p className="text-gray-500 text-xs mt-0.5">
@@ -136,7 +137,7 @@ const AddressCard = ({
         <p className="text-gray-500 text-xs mt-1">📞 {address.phone_number}</p>
       </div>
     </div>
-    <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+    <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-zinc-800">
       <Button
         variant="ghost"
         size="sm"
@@ -198,10 +199,10 @@ const AddressFormModal = ({
         animate={{ y: 0 }}
         exit={{ y: 100 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white w-full md:w-[480px] md:rounded-2xl rounded-t-3xl max-h-[90vh] overflow-auto"
+        className="bg-white dark:bg-zinc-900 w-full md:w-[480px] md:rounded-2xl rounded-t-3xl max-h-[90vh] overflow-auto"
       >
-        <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
-          <h3 className="font-bold text-lg">{isEditing ? "Edit Address" : "Add New Address"}</h3>
+        <div className="sticky top-0 bg-white dark:bg-zinc-950 border-b dark:border-zinc-800 p-4 flex items-center justify-between">
+          <h3 className="font-bold text-lg dark:text-white">{isEditing ? "Edit Address" : "Add New Address"}</h3>
           <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
             <X size={20} />
           </Button>
@@ -228,7 +229,7 @@ const AddressFormModal = ({
             <span className="text-sm text-gray-700">Set as default address</span>
           </label>
         </div>
-        <div className="sticky bottom-0 bg-white border-t p-4">
+        <div className="sticky bottom-0 bg-white dark:bg-zinc-950 border-t dark:border-zinc-800 p-4">
           <Button
             onClick={onSave}
             disabled={isLoading}
@@ -296,7 +297,7 @@ const ShippingStep = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900">Shipping Address</h2>
+        <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Shipping Address</h2>
         <Button
           onClick={() => {
             setForm({});
@@ -311,7 +312,7 @@ const ShippingStep = ({
       </div>
 
       {!addresses || addresses.length === 0 ? (
-        <div className="p-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+        <div className="p-8 text-center bg-gray-50 dark:bg-zinc-900 rounded-2xl border-2 border-dashed border-gray-200 dark:border-zinc-800">
           <MapPin className="mx-auto text-gray-300 mb-3" size={40} />
           <p className="text-gray-600 font-medium">No addresses saved</p>
           <p className="text-sm text-gray-400 mt-1">Add a shipping address to continue</p>
@@ -331,10 +332,11 @@ const ShippingStep = ({
         </div>
       )}
 
+      {/* Action Button */}
       <Button
         onClick={onNext}
         disabled={!selectedAddress}
-        className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold disabled:opacity-50 mt-4"
+        className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold disabled:opacity-50 mt-4 shadow-lg shadow-orange-500/20"
       >
         Continue to Payment <ChevronRight size={18} className="ml-1" />
       </Button>
@@ -386,7 +388,7 @@ const PaymentStep = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg md:text-xl font-bold text-gray-900">Payment Method</h2>
+      <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Payment Method</h2>
 
       <div className="grid gap-3">
         {methods.map((method) => {
@@ -399,8 +401,8 @@ const PaymentStep = ({
               whileTap={{ scale: 0.98 }}
               onClick={() => setPaymentMethod(method.id)}
               className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all ${isSelected
-                  ? "border-orange-500 bg-orange-50/50"
-                  : "border-gray-100 bg-white hover:border-gray-200"
+                ? "border-orange-500 bg-orange-50/50 dark:bg-orange-500/10"
+                : "border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-gray-200 dark:hover:border-zinc-700"
                 }`}
             >
               <div className="flex items-center gap-4">
@@ -410,8 +412,8 @@ const PaymentStep = ({
                   <Icon size={24} className="text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">{method.title}</p>
-                  <p className="text-sm text-gray-500">{method.description}</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{method.title}</p>
+                  <p className="text-sm text-gray-500 dark:text-zinc-500">{method.description}</p>
                 </div>
                 <div
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-orange-500" : "border-gray-300"
@@ -429,9 +431,9 @@ const PaymentStep = ({
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className="bg-purple-50 rounded-xl p-4 border border-purple-100"
+          className="bg-purple-50 dark:bg-purple-900/10 rounded-xl p-4 border border-purple-100 dark:border-purple-900/20"
         >
-          <h4 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
+          <h4 className="font-semibold text-purple-900 dark:text-purple-300 mb-3 flex items-center gap-2">
             <Banknote size={18} /> Bank Details
           </h4>
           <div className="space-y-2 text-sm">
@@ -446,7 +448,7 @@ const PaymentStep = ({
                   navigator.clipboard.writeText(paymentOption.account_number);
                   toast.success("Copied!");
                 }}
-                className="flex items-center gap-1 font-mono font-bold text-purple-700 hover:bg-purple-100 px-2 py-1 rounded"
+                className="flex items-center gap-1 font-mono font-bold text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/30 px-2 py-1 rounded"
               >
                 {paymentOption.account_number} <Copy size={12} />
               </button>
@@ -459,6 +461,7 @@ const PaymentStep = ({
         </motion.div>
       )}
 
+      {/* Action Buttons */}
       <div className="flex gap-3 mt-4">
         <Button onClick={onBack} variant="outline" className="flex-1 h-12 rounded-xl">
           <ArrowLeft size={18} className="mr-2" /> Back
@@ -480,6 +483,7 @@ const ReviewStep = ({
   selectedAddress,
   paymentMethod,
   checkout,
+  initializePayment,
   onBack,
 }: any) => {
   const [loading, setLoading] = useState(false);
@@ -508,7 +512,6 @@ const ReviewStep = ({
 
       if (paymentMethod === "paystack") {
         const authStore = useAuthStore.getState();
-        const paystackAmount = subtotal * 1500;
         const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
 
         if (!publicKey) {
@@ -517,10 +520,25 @@ const ReviewStep = ({
           return;
         }
 
+        // 1. Initialize Paystack directly from frontend (more robust)
+        toast.info("Initializing payment...");
+
+        // 2. Paystack amount in kobo
+        const paystackAmount = subtotal * 1500;
+        if (paystackAmount <= 0) {
+          throw new Error("Invalid order amount");
+        }
+
+        // Generate a simple reference for frontend init
+        // Using timestamp to ensure uniqueness
+        const tempRef = `ref_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+
         const response = await initiatePaystackInline(
           authStore.email || "guest@example.com",
           paystackAmount,
-          publicKey
+          publicKey,
+          { order_id: orderId }, // Metadata for backend verify fallback
+          tempRef
         );
 
         router.push(`/order/success?reference=${response.reference}&status=success`);
@@ -536,32 +554,32 @@ const ReviewStep = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg md:text-xl font-bold text-gray-900">Review Order</h2>
+      <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Review Order</h2>
 
       {/* Shipping Address Summary */}
-      <div className="bg-white rounded-xl border border-gray-100 p-4">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800 p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-500 flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-500 dark:text-zinc-400 flex items-center gap-2">
             <Truck size={16} /> Shipping to
           </span>
         </div>
-        <p className="font-semibold text-gray-900">{selectedAddress?.full_name}</p>
-        <p className="text-sm text-gray-600">
+        <p className="font-semibold text-gray-900 dark:text-white">{selectedAddress?.full_name}</p>
+        <p className="text-sm text-gray-600 dark:text-zinc-400">
           {selectedAddress?.street_address}, {selectedAddress?.city}
         </p>
       </div>
 
       {/* Order Items */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100">
-          <span className="text-sm font-medium text-gray-500 flex items-center gap-2">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800 overflow-hidden">
+        <div className="p-4 border-b border-gray-100 dark:border-zinc-800">
+          <span className="text-sm font-medium text-gray-500 dark:text-zinc-400 flex items-center gap-2">
             <Package size={16} /> Order Items ({cart?.items?.length || 0})
           </span>
         </div>
-        <div className="divide-y divide-gray-50 max-h-[200px] overflow-auto">
+        <div className="divide-y divide-gray-50 dark:divide-zinc-800 max-h-[200px] overflow-auto">
           {cart?.items?.map((item: any) => (
             <div key={item.id} className="flex items-center gap-3 p-3">
-              <div className="w-14 h-14 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 relative">
+              <div className="w-14 h-14 bg-gray-50 dark:bg-zinc-800 rounded-lg overflow-hidden flex-shrink-0 relative">
                 <Image
                   src={item.product.image_url || "/placeholder.svg"}
                   alt={item.product.name}
@@ -570,10 +588,10 @@ const ReviewStep = ({
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 text-sm truncate">{item.product.name}</p>
-                <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{item.product.name}</p>
+                <p className="text-xs text-gray-500 dark:text-zinc-500">Qty: {item.quantity}</p>
               </div>
-              <p className="font-bold text-gray-900 text-sm">
+              <p className="font-bold text-gray-900 dark:text-white text-sm">
                 ₦{(item.product.price * item.quantity * 1500).toLocaleString()}
               </p>
             </div>
@@ -582,25 +600,25 @@ const ReviewStep = ({
       </div>
 
       {/* Payment Method */}
-      <div className="bg-white rounded-xl border border-gray-100 p-4">
-        <span className="text-sm font-medium text-gray-500 flex items-center gap-2 mb-2">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800 p-4">
+        <span className="text-sm font-medium text-gray-500 dark:text-zinc-400 flex items-center gap-2 mb-2">
           <CreditCard size={16} /> Payment
         </span>
-        <p className="font-semibold text-gray-900">
+        <p className="font-semibold text-gray-900 dark:text-white">
           {paymentMethod === "paystack" ? "Pay with Card" : "Bank Transfer"}
         </p>
       </div>
 
       {/* Receipt Upload for Manual */}
       {paymentMethod === "manual" && (
-        <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
-          <label className="block mb-2 text-sm font-medium text-amber-900">
+        <div className="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-4 border border-amber-100 dark:border-amber-900/20">
+          <label className="block mb-2 text-sm font-medium text-amber-900 dark:text-amber-400">
             Upload Payment Receipt (Optional)
           </label>
           <input
             type="file"
             onChange={(e) => e.target.files && setReceipt(e.target.files[0])}
-            className="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200"
+            className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-100 dark:file:bg-amber-900/30 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-200 dark:hover:file:bg-amber-900/50"
           />
         </div>
       )}
@@ -614,7 +632,7 @@ const ReviewStep = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 mt-6">
         <Button
           onClick={onBack}
           variant="outline"
@@ -652,6 +670,7 @@ export default function CheckoutPage() {
   const updateAddress = useUpdateAddress();
   const deleteAddress = useDeleteAddress();
   const checkout = useCheckout();
+  const { verifyPayment, initializePayment } = usePaystackPayment();
   const { data: paymentOption, refetch: fetchPayment } = usePaymentOption();
 
   const [step, setStep] = useState(0);
@@ -678,16 +697,9 @@ export default function CheckoutPage() {
   }
 
   return (
-    <Wrapper>
-      <div className="min-h-screen bg-gray-50/50">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-100 sticky top-0 z-20">
-          <div className="max-w-4xl mx-auto px-4 py-4">
-            <h1 className="text-xl font-bold text-gray-900 text-center">Checkout</h1>
-          </div>
-        </div>
-
-        <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-zinc-950/50 py-4 md:py-8 font-sans">
+      <Wrapper>
+        <div className="max-w-4xl mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Main Content */}
             <div className="lg:col-span-2">
@@ -728,6 +740,7 @@ export default function CheckoutPage() {
                       selectedAddress={selectedAddress}
                       paymentMethod={paymentMethod}
                       checkout={checkout}
+                      initializePayment={initializePayment}
                       onBack={() => setStep(1)}
                     />
                   )}
@@ -737,14 +750,14 @@ export default function CheckoutPage() {
 
             {/* Order Summary Sidebar - Desktop */}
             <div className="hidden lg:block">
-              <div className="bg-white rounded-2xl border border-gray-100 sticky top-24 overflow-hidden">
-                <div className="p-4 border-b border-gray-100">
-                  <h3 className="font-bold text-gray-900">Order Summary</h3>
+              <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800 sticky top-24 overflow-hidden">
+                <div className="p-4 border-b border-gray-100 dark:border-zinc-800">
+                  <h3 className="font-bold text-gray-900 dark:text-white">Order Summary</h3>
                 </div>
                 <div className="p-4 space-y-3 max-h-[300px] overflow-auto">
                   {cart?.items?.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 relative">
+                      <div className="w-12 h-12 bg-gray-50 dark:bg-zinc-800 rounded-lg overflow-hidden flex-shrink-0 relative">
                         <Image
                           src={item.product.image_url || "/placeholder.svg"}
                           alt={item.product.name}
@@ -753,19 +766,19 @@ export default function CheckoutPage() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{item.product.name}</p>
-                        <p className="text-xs text-gray-500">x{item.quantity}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.product.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-zinc-500">x{item.quantity}</p>
                       </div>
-                      <p className="text-sm font-bold">
+                      <p className="text-sm font-bold dark:text-white">
                         ₦{(item.product.price * item.quantity * 1500).toLocaleString()}
                       </p>
                     </div>
                   ))}
                 </div>
-                <div className="p-4 border-t border-gray-100 bg-gray-50">
-                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <div className="p-4 border-t border-gray-100 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-800/50">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-zinc-400 mb-2">
                     <span>Subtotal</span>
-                    <span>
+                    <span className="dark:text-white">
                       ₦
                       {(
                         (cart?.items?.reduce(
@@ -775,12 +788,12 @@ export default function CheckoutPage() {
                       ).toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-600 mb-3">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-zinc-400 mb-3">
                     <span>Shipping</span>
-                    <span className="text-green-600">Free</span>
+                    <span className="text-green-600 font-medium">Free</span>
                   </div>
                   <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
+                    <span className="dark:text-white">Total</span>
                     <span className="text-orange-600">
                       ₦
                       {(
@@ -796,7 +809,9 @@ export default function CheckoutPage() {
             </div>
           </div>
         </div>
-      </div>
-    </Wrapper>
+        {/* Spacer for BottomNav */}
+        <div className="h-24 md:hidden" />
+      </Wrapper>
+    </div>
   );
 }

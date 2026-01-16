@@ -4,20 +4,43 @@
 
 
 
-export const initiatePaystackInline = async (email: string, amount: number, publicKey: string): Promise<{ reference: string | any }> => {
+export const initiatePaystackInline = async (
+  email: string,
+  amount: number,
+  publicKey: string,
+  metadata?: { order_id?: number | string; custom_fields?: any[] },
+  reference?: string,
+  accessCode?: string // 👈 New parameter
+): Promise<{ reference: string | any }> => {
   const PaystackPop = (await import('@paystack/inline-js')).default;
   return new Promise((resolve, reject) => {
     const paystack = new PaystackPop();
-    paystack.newTransaction({
+    const config: any = {
       key: publicKey,
-      email: email,
-      amount: amount * 100, // Convert to kobo/sub-unit
       onSuccess: (transaction: { reference: string }) => {
-        resolve(transaction); // ✅ Resolve with transaction details
+        resolve(transaction);
       },
       onCancel: () => {
-        reject(new Error("Payment cancelled by user")); // ❌ Reject on cancel
+        reject(new Error("Payment cancelled by user"));
       },
-    });
+    };
+
+    if (accessCode) {
+      // ✅ If we have an access_code, ONLY use it. 
+      // Do NOT send reference, email, or amount again.
+      config.access_code = accessCode;
+    } else {
+      // 🔄 Fallback for manual/old flow
+      config.email = email;
+      config.amount = Math.round(amount * 100);
+      config.reference = reference;
+      config.metadata = {
+        order_id: metadata?.order_id,
+        custom_fields: metadata?.custom_fields || []
+      };
+    }
+
+    console.log("Paystack Pop Config:", config);
+    paystack.newTransaction(config);
   });
 };

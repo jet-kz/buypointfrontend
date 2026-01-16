@@ -34,15 +34,16 @@ function OrderSuccessContent() {
     }
   }, [reference, verify, isPending, isSuccess, isError]);
 
-  // ✅ Auto-clear cart on success
+  // ✅ Auto-clear cart ONLY on true backend success
   useEffect(() => {
-    if (isSuccess || statusParam === 'success') {
+    if (isSuccess) {
       clearCart();
       clearBackendCart();
     }
-  }, [isSuccess, statusParam, clearCart, clearBackendCart]);
+  }, [isSuccess, clearCart, clearBackendCart]);
 
-  const showSuccess = isSuccess || statusParam === 'success';
+  const showSuccess = isSuccess;
+  const showFailure = isError || (statusParam === 'failed'); // statusParam is fallback for manual bank failures if any
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 bg-gray-50/50">
@@ -75,7 +76,7 @@ function OrderSuccessContent() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-              className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-lg ${showSuccess ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+              className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-lg ${showSuccess ? "bg-green-100 text-green-600" : showFailure ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-400"
                 }`}
             >
               {showSuccess ? (
@@ -91,7 +92,7 @@ function OrderSuccessContent() {
               transition={{ delay: 0.3 }}
               className="text-3xl font-bold text-gray-900 mb-2"
             >
-              {showSuccess ? "Payment Successful!" : "Payment Failed"}
+              {showSuccess ? "Payment Successful!" : showFailure ? "Payment Failed" : "Verification In Progress"}
             </motion.h1>
 
             <motion.p

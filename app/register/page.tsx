@@ -10,28 +10,29 @@ export const metadata: Metadata = {
 
 function RegisterPage() {
   return (
-    <div className="flex-1 h-full flex flex-col justify-center items-center relative bg-white">
-      <div className="w-[500px] flex flex-col gap-5 lg:w-[600px] max-w-full p-4 ">
+    <div className="flex-1 min-h-screen flex flex-col justify-center items-center relative bg-white">
+      <div className="w-full max-w-[480px] p-6 mx-auto">
         {/* header */}
-        <div className="flex items-center justify-between">
-          <h3 className="text-2xl font-bold">Register</h3>
-          <div>
-            <p>
-              Already have an account?{" "}
-              <Link className="text-primary font-bold" href="/login">
-                Login
-              </Link>{" "}
-            </p>
-          </div>
+        <div className="mb-10 text-center">
+          <h3 className="text-3xl font-bold text-gray-900 tracking-tight">Create Account</h3>
+          <p className="text-gray-500 mt-2">Start your journey with us today.</p>
         </div>
+
         {/* the form body */}
-        <div className="py-[40px]">
+        <div className="mb-10">
           <Register />
         </div>
-        <div className="text-center">
+
+        <div className="text-center pt-6">
           <p className="text-sm text-gray-500">
-            By registration, you agree to the{" "}
-            <Link href={"#"}>Terms of Service</Link> .
+            Already have an account?{" "}
+            <Link className="text-orange-600 font-semibold hover:text-orange-700 hover:underline transition-all" href="/login">
+              Log in
+            </Link>
+          </p>
+          <p className="text-xs text-gray-400 mt-6 max-w-xs mx-auto leading-relaxed">
+            By registering, you agree to our{" "}
+            <Link href="#" className="hover:text-gray-900 underline underline-offset-2">Terms of Service</Link> and <Link href="#" className="hover:text-gray-900 underline underline-offset-2">Privacy Policy</Link>.
           </p>
         </div>
       </div>

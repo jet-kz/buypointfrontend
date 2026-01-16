@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ShoppingCart,
   UserIcon,
@@ -9,7 +9,8 @@ import {
   ListOrdered,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import Logo from "./Logo";
 import { Button } from "./ui/button";
@@ -34,6 +35,11 @@ const Header = () => {
   const router = useRouter();
   const { username, email, logout, token, clearAuth } = useAuthStore();
   const isAuthenticated = !!token;
+
+  const pathname = usePathname();
+  const isCartPage = pathname === "/user/cart";
+  const isCheckoutPage = pathname === "/user/checkout";
+  const isTransactional = isCartPage || isCheckoutPage;
 
   const cartCount = useCartStore((s) =>
     s.items.reduce((acc, item) => acc + item.quantity, 0)
@@ -68,114 +74,122 @@ const Header = () => {
     }
   }, [token, clearAuth, router]);
 
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSticky(window.scrollY > 80);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="relative bg-white dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-800 shadow-sm">
-      <Wrapper noMargin>
-        <div className="relative flex items-center gap-4">
-          {/* Logo */}
-          <Logo />
+    <div className={`relative transition-all duration-300 ${isSticky ? "pb-[68px] lg:pb-0" : ""}`}>
+      <div className={`w-full bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800 shadow-sm transition-all duration-300 z-50 ${isSticky ? "fixed top-0 left-0 right-0 animate-in slide-in-from-top duration-300" : "relative"
+        }`}>
+        <Wrapper noMargin>
+          {/* Top Row: Logo & Actions */}
+          <div className={`flex items-center justify-between transition-all duration-300 ${isSticky ? "h-0 opacity-0 pointer-events-none overflow-hidden lg:h-16 lg:opacity-100 lg:pointer-events-auto lg:flex" : "h-16 lg:h-18"
+            }`}>
+            <div className="flex items-center gap-3 md:gap-6 font-bold">
+              <Logo />
 
-          {/* Search bar */}
-          <div className="flex-1">
-            <Search />
-          </div>
-
-          {/* Right side actions */}
-          <div className="flex items-center gap-4">
-            {/* Cart button */}
-            <Button
-              variant="outline"
-              className="text-primary border-primary hover:bg-white hover:text-primary rounded-full px-5 relative"
-              onClick={() => router.push("/user/cart")}
-            >
-              <ShoppingCart size={22} />
-              <span className="ml-2">Cart</span>
-
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                  {cartCount}
-                </span>
+              {isTransactional && (
+                <div className="flex items-center gap-2 border-l border-gray-200 dark:border-zinc-800 pl-3 md:pl-4">
+                  <span className="text-gray-900 dark:text-white text-lg md:text-xl font-black tracking-tight">
+                    {isCartPage ? "Cart" : "Checkout"}
+                  </span>
+                </div>
               )}
-            </Button>
+            </div>
 
-            {/* Mode Toggle */}
-            <ModeToggle />
-
-            {/* Authenticated vs Public */}
-            {!isAuthenticated ? (
-              <div className="flex items-center">
-                <Link
-                  href="/login"
-                  className="text-gray-900 font-bold flex items-center px-4 gap-1"
-                >
-                  <UserIcon size={18} />
-                  Login
-                </Link>
-                |
-                <Link
-                  href="/register"
-                  className="text-gray-900 font-bold flex items-center px-4 gap-1"
-                >
-                  Register
-                </Link>
+            {/* Desktop Search (Centered) */}
+            {!isTransactional && (
+              <div className="hidden lg:block flex-1 max-w-xl px-8">
+                <Search />
               </div>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Avatar className="w-10 h-10 cursor-pointer hover:opacity-80 transition">
-                    <AvatarImage
-                      src="/placeholder-avatar.png"
-                      alt={username ?? "User"}
-                    />
-                    <AvatarFallback>
-                      {username?.[0]?.toUpperCase() ?? "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  side="bottom"
-                  sideOffset={6}
-                  className="w-70 rounded-2xl"
-                >
-                  <DropdownMenuLabel>
-                    <div>
-                      <p className="font-semibold">Hi, {username ?? "Guest"}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{email}</p>
-                    </div>
-                  </DropdownMenuLabel>
-
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuItem
-                    onClick={() => router.push("/user/profile")}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Buypoint Profile
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuItem onClick={() => router.push("/user/order")}>
-                    <ListOrdered className="mr-2 h-4 w-4" />
-                    My Orders
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuItem
-                    onClick={logout}
-                    className="text-red-600 font-semibold"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             )}
+
+            <div className="flex items-center gap-1 md:gap-4">
+              {!isTransactional ? (
+                <>
+                  <ModeToggle />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative h-10 w-10 md:h-11 md:w-auto md:px-5 md:border md:rounded-full text-gray-700 dark:text-zinc-300"
+                    onClick={() => router.push("/user/cart")}
+                  >
+                    <ShoppingCart size={20} />
+                    <span className="ml-2 hidden md:inline font-bold">Cart</span>
+                    {cartCount > 0 && (
+                      <span className="absolute top-1 right-1 md:top-2 md:right-3 bg-orange-600 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Button>
+
+                  {!isAuthenticated ? (
+                    <Link
+                      href="/login"
+                      className="flex items-center justify-center h-10 w-10 md:w-auto md:px-5 md:bg-gray-100 md:dark:bg-zinc-900 rounded-full text-gray-700 dark:text-zinc-300 font-bold"
+                    >
+                      <UserIcon size={20} />
+                      <span className="ml-2 hidden md:inline">Login</span>
+                    </Link>
+                  ) : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Avatar className="w-9 h-9 md:w-10 md:h-10 cursor-pointer border dark:border-zinc-800">
+                          <AvatarFallback className="bg-orange-50 text-orange-600 dark:bg-zinc-900 dark:text-zinc-500 text-xs font-bold">
+                            {username?.[0]?.toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-64 rounded-2xl p-2 mt-2">
+                        <DropdownMenuLabel className="p-3">
+                          <p className="text-sm font-bold">Hi, {username}</p>
+                          <p className="text-[10px] text-gray-400 truncate">{email}</p>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => router.push("/user/profile")} className="rounded-xl py-2.5 cursor-pointer">
+                          <Settings className="mr-3 h-4 w-4" /> Profile
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => router.push("/user/order")} className="rounded-xl py-2.5 cursor-pointer">
+                          <ListOrdered className="mr-3 h-4 w-4" /> Orders
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={logout} className="rounded-xl py-2.5 text-red-600 cursor-pointer font-bold">
+                          <LogOut className="mr-3 h-4 w-4" /> Logout
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <ModeToggle />
+                  {isAuthenticated && (
+                    <Avatar className="w-8 h-8 border dark:border-zinc-800">
+                      <AvatarFallback className="text-[10px] font-black">{username?.[0]}</AvatarFallback>
+                    </Avatar>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </Wrapper>
+
+          {/* Mobile Search Row: Becomes the ONLY row when sticky */}
+          {!isTransactional && (
+            <div className={`lg:hidden pb-4 transition-all duration-300 ${isSticky ? "pt-4" : "pt-1"}`}>
+              <div className="px-1">
+                <Search />
+              </div>
+            </div>
+          )}
+        </Wrapper>
+      </div>
     </div>
   );
 };

@@ -17,7 +17,7 @@ export default function LayoutWrapper({
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      {/* ✅ Hide header/footer on superadmin pages and mobile */}
+      {/* ✅ Hide header on superadmin pages and mobile */}
       {!isSuperAdmin && !isMobile && <Header />}
 
       <div className="flex-1 flex flex-col relative">{children}</div>

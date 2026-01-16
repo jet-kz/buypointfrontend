@@ -21,12 +21,18 @@ export default function HomePage() {
   if (isMobile) {
     // MOBILE VERSION
     return (
-      <div className="relative">
+      <div className="relative min-h-screen bg-white dark:bg-zinc-950">
         <MobileHeader />
         <MobileHeroSlider />
-        <MobileCategories categories={categories} />
-        <MobileProductsList />
-        <BottomNav />
+        <div className="px-1">
+          <MobileCategories categories={categories} />
+          <div className="px-3">
+            <MobileProductsList />
+          </div>
+        </div>
+
+        {/* Spacer for BottomNav */}
+        <div className="h-24" />
       </div>
     );
   }

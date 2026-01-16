@@ -38,10 +38,10 @@ const Search = () => {
   };
 
   return (
-    <div className="relative w-full max-w-[450px] mx-auto" ref={dropdownRef}>
+    <div className="relative w-full max-w-2xl" ref={dropdownRef}>
       {/* Search bar */}
-      <div className="flex items-center h-[40px] rounded-full bg-white dark:bg-zinc-900 border border-primary overflow-hidden">
-        <SearchIcon className="text-primary mx-4" size={20} />
+      <div className="group flex items-center h-11 rounded-xl bg-gray-100 dark:bg-zinc-900 border border-transparent focus-within:border-orange-500/20 focus-within:bg-white dark:focus-within:bg-zinc-800 focus-within:shadow-lg focus-within:shadow-orange-500/5 transition-all overflow-hidden px-4">
+        <SearchIcon className="text-gray-400 group-focus-within:text-orange-500 transition-colors" size={18} />
         <input
           type="text"
           value={query}
@@ -49,16 +49,19 @@ const Search = () => {
             setQuery(e.target.value);
             setShowDropdown(true);
           }}
-          placeholder="What are you looking for?"
-          className="flex-1 h-full bg-transparent outline-none text-sm text-foreground"
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          placeholder="Search for products, brands..."
+          className="flex-1 h-full bg-transparent outline-none text-sm text-foreground px-3 font-medium placeholder:text-gray-400 dark:placeholder:text-zinc-500"
         />
-        <button
-          type="button"
-          onClick={() => handleSearch()}
-          className="bg-primary text-white px-4 py-2 rounded-r-full h-full text-sm hover:bg-primary/90 transition-colors"
-        >
-          Search
-        </button>
+        {query && (
+          <button
+            tabIndex={-1}
+            onClick={() => setQuery("")}
+            className="p-1 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded-full transition-colors text-gray-400"
+          >
+            <SearchIcon className="rotate-45" size={14} /> {/* Simple 'x' using rotated search or just use X icon */}
+          </button>
+        )}
       </div>
 
       {/* Suggestions dropdown */}

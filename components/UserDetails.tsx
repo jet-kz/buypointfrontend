@@ -16,11 +16,12 @@ import {
   Phone,
   Globe,
   Clock,
-  Briefcase
+  Briefcase,
+  Badge
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+
 import { motion } from "framer-motion";
 
 export default function UserDetails() {
@@ -189,7 +190,7 @@ export default function UserDetails() {
               <CardTitle className="text-base flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-orange-500" /> Recent Transactions
               </CardTitle>
-              <Badge variant="outline" className="rounded-lg h-6 px-2 text-[10px] font-normal border-gray-200">{user.orders?.length || 0} Orders</Badge>
+              <Badge className="rounded-lg h-6 px-2 text-[10px] font-normal border-gray-200">{user.orders?.length || 0} Orders</Badge>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
